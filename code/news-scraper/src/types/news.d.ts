@@ -12,7 +12,7 @@ export type JSON_Item = {
 
 export type JSON_Links = {
   self: string
-  next: string
+  next?: string
 }
 
 export type JSON_Meta = {
@@ -20,11 +20,11 @@ export type JSON_Meta = {
 }
 
 export type JSON_Article = {
-  title: string
-  canonical_url: string
+  title?: string
+  description?: string
   thumbnail: string
-  description: string
   publication_date: string
+  canonical_url: string
 }
 
 export type Article = {

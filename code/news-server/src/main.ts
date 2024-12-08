@@ -1,24 +1,59 @@
-import chalk from 'chalk'
-import { embed } from './embedder.js'
-import { indexName, redis } from './redis-client.js'
+import cors from 'cors'
+import express, { Express } from 'express'
 
-const query = 'high on speed'
-const count = 1
+import { search, fetchArticle } from './search.js'
 
-const searchQuery = '*'
-const vectorQuery = `KNN ${count} @embedding $BLOB`
-const redisQuery = `(${searchQuery})=>[${vectorQuery}]`
+/* Create the Express app */
+const app: Express = express()
 
-const embedding = await embed(query)
-console.log(embedding)
+/* Use JSON */
+app.use(express.json())
 
-const searchResults = await redis.ft.search(indexName, redisQuery, {
-  DIALECT: 2,
-  PARAMS: { BLOB: embedding },
-  SORTBY: '__embedding_score',
-  RETURN: ['title', 'description', 'url', 'imageUrl', 'publicationDate', '__embedding_score']
+/* Enable CORS */
+app.use(cors())
+app.use(function (_req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  next()
 })
 
-console.dir(searchResults, { depth: null })
+/* Home route with a status message */
+app.get('/', (_req, res) => {
+  res.json({ staus: 'OK' })
+})
 
-await redis.quit()
+/* Search for news articles */
+app.get('/search/:query', async (req, res) => {
+  const count = 5
+  const query = req.params.query
+
+  const searchResults = await search(query, count)
+  res.json(searchResults)
+})
+
+/* Search for news articles with a custom count */
+app.get('/search/:count/:query', async (req, res) => {
+  const count = parseInt(req.params.count)
+  const query = req.params.query
+
+  /* Validate the count */
+  if (isNaN(count)) {
+    res.status(400).json({ error: 'Invalid count' })
+    return
+  }
+
+  const searchResults = await search(query, count)
+  res.json(searchResults)
+})
+
+/* Get a single article */
+app.get('/article/:id', async (req, res) => {
+  const id = req.params.id
+  const article = await fetchArticle(id)
+  res.json(article)
+})
+
+/* Start the server */
+const server = app.listen(8080, () => {
+  console.log('Server is running on port 8080')
+})

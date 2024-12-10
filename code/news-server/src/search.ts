@@ -26,6 +26,7 @@ async function search(userQuery: string, count: number): Promise<Article[]> {
   const options: SearchOptions = {
     DIALECT: 2,
     PARAMS: { BLOB: embedding },
+    SORTBY: '__embedding_score',
     LIMIT: { from: 0, size: count },
     RETURN: ['title', 'description', 'url', 'imageUrl', 'publicationDate', '__embedding_score']
   }

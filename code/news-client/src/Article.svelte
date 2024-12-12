@@ -1,4 +1,8 @@
 <script lang="ts">
+  // @ts-ignore: Don't have time to play TypeScript Sudoku for something that should just work
+  const newsServerPort = import.meta.env.VITE_NEWS_SERVER_PORT || 8080
+  const newsServerUrl = `http://localhost:${newsServerPort}`
+
   export let params
   let id = params.id
 
@@ -7,7 +11,7 @@
   let date: Date = new Date()
 
   async function fetchArticle() {
-    const response = await fetch(`http://localhost:8080/article/${id}`)
+    const response = await fetch(`${newsServerUrl}/article/${id}`)
     article = await response.json()
     date = new Date(article.publicationDate * 1000)
   }

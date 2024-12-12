@@ -1,11 +1,15 @@
 <script lang="ts">
+  // @ts-ignore: Don't have time to play TypeScript Sudoku for something that should just work
+  const newsServerPort = import.meta.env.VITE_NEWS_SERVER_PORT || 8080
+  const newsServerUrl = `http://localhost:${newsServerPort}`
+
   export let params: { query: string }
 
   let query = decodeURIComponent(params.query)
   let articles: Article[] = []
 
   async function fetchArticles() {
-    const response = await fetch(`http://localhost:8080/search/5/${params.query}`)
+    const response = await fetch(`${newsServerUrl}/search/5/${params.query}`)
     articles = await response.json()
   }
 

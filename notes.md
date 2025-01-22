@@ -1,0 +1,9 @@
+- Reasons why
+  - Minimize latency 
+  - Many databases save to cache already
+  - Can implement failovers
+- Redis can be thought of as giant hash table
+- Hashes are faster but json is more convenient
+  - Use json unless you're doing embeddings 
+- Slight performance boost using unlink instead of delete
+- Atomic consistent isolated durable (acid)
